@@ -1,0 +1,20 @@
+{
+  "name": "ton-watcher",
+  "version": "1.0.0",
+  "description": "A simple Free TON external messages listener & DB logger",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node index.js",
+    "fetch": "node fetchMessages.js"
+  },
+  "author": "Waifuston",
+  "license": "MIT",
+  "dependencies": {
+    "@tonclient/core": "^1.11.1",
+    "@tonclient/lib-node": "^1.11.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.2"
+  }
+}

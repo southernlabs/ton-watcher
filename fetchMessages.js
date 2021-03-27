@@ -1,0 +1,72 @@
+const {TonClient} = require("@tonclient/core");
+const {libNode} = require("@tonclient/lib-node");
+const mongoose = require("mongoose");
+const express = require("express");
+
+const uri = "mongodb+srv://"
+const watchAddress = "0:1cc19337587036a64f1806efdc9a3c34862181ac771b9424bd7c3e75bade58c4"
+
+const watchAbi = require("./abis/CryptoNeuralWaifu.abi.json");
+const app = express();
+const Schema = mongoose.Schema;
+const ExteranlMessage = require('./models/ExternalMessage');
+TonClient.useBinaryLibrary(libNode);
+const client = new TonClient({
+  network: { 
+      server_address: 'https://main.ton.dev' // 'net.ton.dev'
+  } 
+});
+
+(async () => {
+    try {
+        await mongoose.connect(uri,{
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true
+        })
+
+        getMessages();
+
+    } catch (error) {
+        console.error(error);
+    }
+})();
+
+async function decodeMessage(body){
+    var params = {
+            abi: { value: watchAbi, type:'Contract' },
+            body: body,
+            is_internal: false
+        }
+    var decoded = await client.abi.decode_message_body(params);
+    //console.log( decoded)
+    return decoded;
+}
+
+async function getMessages(time = (Date.now()/1000)+10000){
+    var msgs = await client.net.query_collection({
+        collection: "messages",
+        filter: {msg_type:{eq:2}, src:{eq:watchAddress}, created_at: {lt:time}},
+        limit: 50,
+        order: [ {path:"created_at",direction:'DESC'} ],
+        result: "id,created_at,body",
+        
+    });
+
+    msgs.result.forEach(async (e) => {
+        try{
+            let decoded = await decodeMessage(e.body)
+            const msg = new ExteranlMessage({id:e.id, decoded: decoded, created_at: e.created_at})
+            await msg.save();
+        }catch(err){
+             console.log(err);
+        }
+    })
+
+    console.log("👋 Got "+msgs.result.length+" messages")
+
+    if(msgs.result[msgs.result.length - 1].created_at != time)
+        getMessages(msgs.result[msgs.result.length - 1].created_at)
+    else
+        console.log("🚩 Fetch task ended")
+}
