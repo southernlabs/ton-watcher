@@ -3,22 +3,24 @@ const {libNode} = require("@tonclient/lib-node");
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require('cors');
+require('dotenv').config()
 
-const uri = "mongodb+srv://"
-const watchAddress = "0:1cc19337587036a64f1806efdc9a3c34862181ac771b9424bd7c3e75bade58c4"
-const PORT = 5000
+const uri = process.env.MONGODB_URI
+const watchAddress = process.env.WATCH_ADDRESS
+const PORT = process.env.PORT || 8080
 
 const watchAbi = require("./abis/CryptoNeuralWaifu.abi.json");
 const ExteranlMessage = require('./models/ExternalMessage');
+
 const app = express();
 app.use(cors())
+
 const Schema = mongoose.Schema;
+
 TonClient.useBinaryLibrary(libNode);
-const client = new TonClient({
-  network: { 
-      server_address: 'https://main.ton.dev' // 'net.ton.dev'
-  } 
-});
+const client = new TonClient({network: { 
+    endpoints: JSON.parse(process.env.ENDPOINTS)
+}});
 
 
 (async () => {
@@ -72,8 +74,9 @@ app.get("/account_actions/:id", async function(req, res){
     console.log(data)
     res.json(data);
 });
-app.listen(PORT);
 
+console.log("App started at port: ",PORT)
+app.listen(PORT);
 
 async function decodeMessage(body){
     var params = {

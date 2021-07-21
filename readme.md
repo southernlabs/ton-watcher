@@ -16,11 +16,14 @@ TON SDK examples: https://github.com/tonlabs/sdk-samples/tree/master/low-level/n
 ## How to
 
 - Change code as you want
-- Setup network, watch address, abi and mongodb uri
+- Setup ENV variables: network, watch address, abi and mongodb uri
 - Run `npm run fetch` to fetch all External messages from blockchain to MongoDB
 - Start the app `npm run start`
 
-## TODO
-
-- Change all hardcoded variables to ENV variables
-- ???
+### ENV
+```
+MONGODB_URI=mongodb+srv://
+WATCH_ADDRESS=0:1cc19337587036a64f1806efdc9a3c34862181ac771b9424bd7c3e75bade58c4
+ENDPOINTS=["https://main1.ton.dev/","https://main2.ton.dev/","https://main3.ton.dev/"]
+PORT=5000
+```

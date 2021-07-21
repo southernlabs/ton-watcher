@@ -1,21 +1,19 @@
 const {TonClient} = require("@tonclient/core");
 const {libNode} = require("@tonclient/lib-node");
 const mongoose = require("mongoose");
-const express = require("express");
+require('dotenv').config()
 
-const uri = "mongodb+srv://"
-const watchAddress = "0:1cc19337587036a64f1806efdc9a3c34862181ac771b9424bd7c3e75bade58c4"
+const uri = process.env.MONGODB_URI
+const watchAddress = process.env.WATCH_ADDRESS
 
 const watchAbi = require("./abis/CryptoNeuralWaifu.abi.json");
-const app = express();
+
 const Schema = mongoose.Schema;
 const ExteranlMessage = require('./models/ExternalMessage');
 TonClient.useBinaryLibrary(libNode);
-const client = new TonClient({
-  network: { 
-      server_address: 'https://main.ton.dev' // 'net.ton.dev'
-  } 
-});
+const client = new TonClient({network: { 
+    endpoints: JSON.parse(process.env.ENDPOINTS)
+}});
 
 (async () => {
     try {

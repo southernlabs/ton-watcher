@@ -1,6 +1,6 @@
 {
   "name": "ton-watcher",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple Free TON external messages listener & DB logger",
   "main": "index.js",
   "scripts": {
@@ -9,11 +9,16 @@
     "fetch": "node fetchMessages.js"
   },
   "author": "Waifuston",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/southernlabs/ton-watcher"
+  },
   "license": "MIT",
   "dependencies": {
-    "@tonclient/core": "^1.11.1",
-    "@tonclient/lib-node": "^1.11.1",
+    "@tonclient/core": "^1.20.0",
+    "@tonclient/lib-node": "^1.20.0",
     "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "mongoose": "^5.12.2"
   }
