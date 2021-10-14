@@ -9,17 +9,15 @@ const uri = process.env.MONGODB_URI
 const watchAddress = process.env.WATCH_ADDRESS
 const PORT = process.env.PORT || 8080
 
-const watchAbi = require("./abis/CryptoNeuralWaifu.abi.json");
-const ExteranlMessage = require('./models/ExternalMessage');
+const watchAbi = require(process.env.ABI_FILE || "./abis/CryptoNeuralWaifu.abi.json");
+const ExternalMessage = require('./models/ExternalMessage');
 
 const app = express();
 app.use(cors())
 
-const Schema = mongoose.Schema;
-
 TonClient.useBinaryLibrary(libNode);
 const client = new TonClient({network: { 
-    endpoints: JSON.parse(process.env.ENDPOINTS)
+    endpoints: JSON.parse(process.env.ENDPOINTS || ["https://main1.ton.dev/","https://main2.ton.dev/","https://main3.ton.dev/"])
 }});
 
 
@@ -39,7 +37,7 @@ const client = new TonClient({network: {
             try {
 
                 const decoded = await decodeMessage(params.result.body)
-                const msg = new ExteranlMessage({id:params.result.id, decoded: decoded, created_at: params.result.created_at})
+                const msg = new ExternalMessage({id:params.result.id, decoded: decoded, created_at: params.result.created_at})
                 await msg.save();
 
                 console.log("Got new message!")
@@ -56,24 +54,15 @@ const client = new TonClient({network: {
     //client.close();
 })();
 
-/*
-    Sample Waifuston functions
-*/
-// Gets messages with this waifu token
-app.get("/waifu/:id", async function(req, res){
-    var data = await ExteranlMessage.find({"decoded.value.waifuIndex":req.params.id})
-    res.json(data);
-});
-// Gets messages where user with given PubKey acts as owner,bidder,seller
-app.get("/account_actions/:id", async function(req, res){
-    var data = await ExteranlMessage.find({
-        $or: [ 
-            {"decoded.value.from":req.params.id},{"decoded.value.to":req.params.id},{"decoded.value.seller":req.params.id},{"decoded.value.bidder":req.params.id},{"decoded.value.byuer":req.params.id} 
-        ]
-    })
-    console.log(data)
-    res.json(data);
-});
+const routes = require("./api-routes");
+app.use(routes);
+
+app.get("/", (req, res)=>{
+    res.send(`TON Watcher: 
+    <a href="https://github.com/southernlabs/ton-watcher">github.com/southernlabs/ton-watcher</a> <br>
+    Docs: 
+    <a href="https://southernlabs.gitbook.io/ton-watcher/">southernlabs.gitbook.io/ton-watcher/</a>`)
+})
 
 console.log("App started at port: ",PORT)
 app.listen(PORT);
