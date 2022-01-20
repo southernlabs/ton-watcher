@@ -1,6 +1,8 @@
-# TON Watcher
+# TON Watcher (Ever Watcher)
 
 by [waifuston.com](https://waifuston.com)
+
+👉 Check out our new [complete True NFT toolset](https://github.com/southernlabs/tnft-generator). With that tool you can setup your own True NFT collection. Check out `api-server` component for updated code.
 
 A simple Free TON external messages listener & DB logger.
 
